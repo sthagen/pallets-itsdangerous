@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+from datetime import timezone
 from functools import partial
 
 import pytest
@@ -14,10 +15,10 @@ from test_itsdangerous.test_serializer import TestSerializer
 from test_itsdangerous.test_signer import TestSigner
 
 
-class FreezeMixin(object):
+class FreezeMixin:
     @pytest.fixture()
     def ts(self):
-        return datetime(2011, 6, 24, 0, 9, 5)
+        return datetime(2011, 6, 24, 0, 9, 5, tzinfo=timezone.utc)
 
     @pytest.fixture(autouse=True)
     def freeze(self, ts):
@@ -53,6 +54,7 @@ class TestTimestampSigner(FreezeMixin, TestSigner):
             signer.unsign(signed)
 
         assert "missing" in str(exc_info.value)
+        assert exc_info.value.date_signed is None
 
     def test_malformed_timestamp(self, signer):
         other = Signer("secret-key")
@@ -62,6 +64,24 @@ class TestTimestampSigner(FreezeMixin, TestSigner):
             signer.unsign(signed)
 
         assert "Malformed" in str(exc_info.value)
+        assert exc_info.value.date_signed is None
+
+    def test_future_age(self, signer):
+        signed = signer.sign("value")
+
+        with freeze_time("1971-05-31"):
+            with pytest.raises(SignatureExpired) as exc_info:
+                signer.unsign(signed, max_age=10)
+
+        assert isinstance(exc_info.value.date_signed, datetime)
+
+    def test_sig_error_date_signed(self, signer):
+        signed = signer.sign("my string").replace(b"my", b"other", 1)
+
+        with pytest.raises(BadTimeSignature) as exc_info:
+            signer.unsign(signed)
+
+        assert isinstance(exc_info.value.date_signed, datetime)
 
 
 class TestTimedSerializer(FreezeMixin, TestSerializer):
