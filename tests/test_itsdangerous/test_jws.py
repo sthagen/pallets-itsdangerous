@@ -22,10 +22,10 @@ class TestJWSSerializer(TestSerializer):
 
         return factory
 
-    test_signer_cls = None
-    test_signer_kwargs = None
-    test_fallback_signers = None
-    test_iter_unsigners = None
+    test_signer_cls = None  # type: ignore
+    test_signer_kwargs = None  # type: ignore
+    test_fallback_signers = None  # type: ignore
+    test_iter_unsigners = None  # type: ignore
 
     @pytest.mark.parametrize("algorithm_name", ("HS256", "HS384", "HS512", "none"))
     def test_algorithm(self, serializer_factory, algorithm_name):
@@ -66,6 +66,17 @@ class TestJWSSerializer(TestSerializer):
             serializer.loads(signed)
 
         assert match in str(exc_info.value)
+
+    def test_secret_keys(self):
+        with pytest.deprecated_call():
+            serializer = JSONWebSignatureSerializer("a")
+
+        dumped = serializer.dumps("value")
+
+        with pytest.deprecated_call():
+            serializer = JSONWebSignatureSerializer(["a", "b"])
+
+        assert serializer.loads(dumped) == "value"
 
 
 class TestTimedJWSSerializer(TestJWSSerializer, TestTimedSerializer):

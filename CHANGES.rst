@@ -19,6 +19,12 @@ Unreleased
     the timestamp offset is changed. :issue:`126`
 -   ``BadTimeSignature.date_signed`` is always a ``datetime`` object
     rather than an ``int`` in some cases. :issue:`124`
+-   Added support for key rotation. A list of keys can be passed as
+    ``secret_key``, oldest to newest. The newest key is used for
+    signing, all keys are tried for unsigning. :pr:`141`
+-   Removed the default SHA-512 fallback signer from
+    ``default_fallback_signers``. :issue:`155`
+-   Add type information for static typing tools. :pr:`186`
 
 
 Version 1.1.0
