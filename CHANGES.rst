@@ -1,7 +1,7 @@
 Version 2.1.0
 -------------
 
-Unreleased
+Released 2022-02-17
 
 -   Drop support for Python 3.6. :pr:`272`
 -   Remove previously deprecated code. :pr:`273`
@@ -10,12 +10,6 @@ Unreleased
         instead.
     -   ``import itsdangerous.json``: Import ``json`` from the standard
         library instead.
-
-
-Version 2.0.2
--------------
-
-Unreleased
 
 
 Version 2.0.1
