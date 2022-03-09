@@ -1,3 +1,11 @@
+Version 2.1.1
+-------------
+
+Released 2022-03-09
+
+-   Handle date overflow in timed unsign. :pr:`296`
+
+
 Version 2.1.0
 -------------
 
